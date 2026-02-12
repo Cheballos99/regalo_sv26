@@ -58,14 +58,15 @@
         .botones-area {
             position: relative;
             width: 100%;
-            height: 150px;
+            height: 100px; /* ajustado para dar espacio */
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 40px; /* separación entre SÍ y NO */
         }
 
         button {
-            padding: 12px 25px;
+            padding: 12px 35px; /* un poco más ancho para mejor visual */
             border: none;
             border-radius: 50px;
             font-size: 1.1rem;
@@ -78,18 +79,13 @@
             background: var(--principal);
             color: white;
             z-index: 50;
-            position: relative;
         }
 
         #btn-no {
             background: #ff4d4d;
             color: white;
             z-index: 40;
-            position: absolute;
-            /* Posición inicial para que aparezca cerca del SÍ */
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+            /* NO usa position: absolute al inicio, queda en flex normal */
         }
 
         .oculto { display: none !important; }
@@ -152,7 +148,6 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Tus canciones
         const VIDEO_ID_INICIAL = 'UZWmtxLiiFE';
         const VIDEO_ID_FINAL   = 'IpFX2vq8HKw';
 
@@ -194,12 +189,8 @@
             });
         }
 
-        function onPlayerReady(event) {
-            playerReady = true;
-        }
-
+        function onPlayerReady(event) { playerReady = true; }
         function onPlayerStateChange(event) {}
-
         function onPlayerError(event) {}
 
         function playVideoWithLoop(videoId) {
@@ -227,7 +218,7 @@
 
         function moverBoton(e) {
             e.preventDefault();
-            e.stopPropagation(); // Evita que se active varias veces rápido
+            e.stopPropagation();
 
             const padding = 30;
             const maxX = window.innerWidth - btnNo.offsetWidth - padding * 2;
@@ -236,20 +227,18 @@
             const randomX = padding + Math.random() * maxX;
             const randomY = padding + Math.random() * maxY;
 
-            // Cambiamos a fixed para que se mueva por toda la pantalla
+            // Ahora sí lo hacemos fixed y lo movemos
             btnNo.style.position = 'fixed';
             btnNo.style.left = randomX + 'px';
             btnNo.style.top = randomY + 'px';
 
-            // El SÍ crece
+            // Crecimiento del SÍ
             escalaSi += 0.18;
             btnSi.style.transform = `scale(${escalaSi})`;
         }
 
-        // Activamos tanto en hover (mouse) como en touch (celular)
         btnNo.addEventListener('mouseover', moverBoton);
         btnNo.addEventListener('touchstart', moverBoton);
-        // También en click por si acaso
         btnNo.addEventListener('click', moverBoton);
 
         // Acción SÍ
@@ -274,7 +263,6 @@
             }, 2500);
         });
 
-        // Decoraciones
         function iniciarDecoraciones() {
             for (let i = 0; i < 30; i++) {
                 const spark = document.createElement('div');
