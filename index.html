@@ -56,17 +56,41 @@
         h1 { color: var(--oscuro); font-size: 1.4rem; margin-bottom: 20px; }
 
         .botones-area {
-            position: relative; width: 100%; height: 150px;
-            display: flex; justify-content: center; align-items: center;
+            position: relative;
+            width: 100%;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         button {
-            padding: 12px 25px; border: none; border-radius: 50px;
-            font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: 0.2s;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
-        #btn-si { background: var(--principal); color: white; z-index: 50; position: relative; }
-        #btn-no { background: #ff4d4d; color: white; position: absolute; z-index: 40; }
+        #btn-si {
+            background: var(--principal);
+            color: white;
+            z-index: 50;
+            position: relative;
+        }
+
+        #btn-no {
+            background: #ff4d4d;
+            color: white;
+            z-index: 40;
+            position: absolute;
+            /* Posición inicial para que aparezca cerca del SÍ */
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
 
         .oculto { display: none !important; }
 
@@ -115,7 +139,7 @@
             <h1 style="color: var(--rosa);">¡Sabía que dirías que sí! ❤️</h1>
             <p style="color: var(--oscuro); font-size: 0.9rem;">✨ Un detallito virtual para ti :3 ✨</p>
             <img id="foto-loop" src="" alt="Nosotros" class="nuestra-foto">
-           <div style="color: var(--oscuro); font-weight: bold; font-size: 0.8rem; text-align: center;">
+            <div style="color: var(--oscuro); font-weight: bold; font-size: 0.8rem; text-align: center;">
                 Nuestras ultimas aventurillas :3, todas muy bonitas contigo
             </div>
             <div style="color: var(--oscuro); font-weight: bold; font-size: 1rem;">
@@ -128,9 +152,9 @@
 
     <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Tus canciones (ya las cambiaste bien)
-        const VIDEO_ID_INICIAL = 'UZWmtxLiiFE';   // Nat King Cole - L-O-V-E (primera, pregunta)
-        const VIDEO_ID_FINAL   = 'IpFX2vq8HKw';   // yung kai - blue (segunda, final)
+        // Tus canciones
+        const VIDEO_ID_INICIAL = 'UZWmtxLiiFE';
+        const VIDEO_ID_FINAL   = 'IpFX2vq8HKw';
 
         let player;
         let playerReady = false;
@@ -157,7 +181,7 @@
                     'autoplay': 0,
                     'controls': 0,
                     'loop': 1,
-                    'playlist': VIDEO_ID_INICIAL,   // clave para loop de un solo video
+                    'playlist': VIDEO_ID_INICIAL,
                     'rel': 0,
                     'modestbranding': 1,
                     'enablejsapi': 1
@@ -172,40 +196,22 @@
 
         function onPlayerReady(event) {
             playerReady = true;
-            console.log("YouTube Player está listo");
-            // No reproducimos aquí, esperamos clic del usuario
         }
 
-        function onPlayerStateChange(event) {
-            console.log("Estado del player:", event.data);
-            // -1 = sin empezar / error, 0 = terminado, 1 = reproduciendo, 2 = pausado, 3 = buffering, 5 = video cueado
-            if (event.data === 0) { // terminado
-                console.log("Video terminó → debería loop pero chequeamos");
-            }
-        }
+        function onPlayerStateChange(event) {}
 
-        function onPlayerError(event) {
-            console.error("Error en YouTube Player:", event.data);
-        }
+        function onPlayerError(event) {}
 
         function playVideoWithLoop(videoId) {
             if (!playerReady) {
-                console.warn("Player no ready aún, esperando...");
                 setTimeout(() => playVideoWithLoop(videoId), 500);
                 return;
             }
-
-            player.loadVideoById({
-                videoId: videoId,
-                startSeconds: 0
-            });
-
-            // Forzamos loop después de cargar
+            player.loadVideoById({ videoId: videoId, startSeconds: 0 });
             setTimeout(() => {
                 player.setLoop(true);
                 player.playVideo();
-                console.log("Intentando reproducir:", videoId);
-            }, 800); // pequeño delay para que cargue
+            }, 800);
         }
 
         function comenzar() {
@@ -214,30 +220,37 @@
             iniciarDecoraciones();
         }
 
-        // Lógica botón NO
+        // Lógica botón NO evasivo
         const btnNo = document.getElementById('btn-no');
         const btnSi = document.getElementById('btn-si');
         let escalaSi = 1;
 
         function moverBoton(e) {
-            if(e) e.preventDefault();
-            const padding = 20;
-            const maxX = window.innerWidth - btnNo.offsetWidth - padding;
-            const maxY = window.innerHeight - btnNo.offsetHeight - padding;
-            
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+            e.preventDefault();
+            e.stopPropagation(); // Evita que se active varias veces rápido
 
+            const padding = 30;
+            const maxX = window.innerWidth - btnNo.offsetWidth - padding * 2;
+            const maxY = window.innerHeight - btnNo.offsetHeight - padding * 2;
+
+            const randomX = padding + Math.random() * maxX;
+            const randomY = padding + Math.random() * maxY;
+
+            // Cambiamos a fixed para que se mueva por toda la pantalla
             btnNo.style.position = 'fixed';
-            btnNo.style.left = Math.max(padding, randomX) + 'px';
-            btnNo.style.top = Math.max(padding, randomY) + 'px';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
 
-            escalaSi += 0.2;
+            // El SÍ crece
+            escalaSi += 0.18;
             btnSi.style.transform = `scale(${escalaSi})`;
         }
 
+        // Activamos tanto en hover (mouse) como en touch (celular)
         btnNo.addEventListener('mouseover', moverBoton);
         btnNo.addEventListener('touchstart', moverBoton);
+        // También en click por si acaso
+        btnNo.addEventListener('click', moverBoton);
 
         // Acción SÍ
         btnSi.addEventListener('click', () => {
@@ -252,16 +265,16 @@
                 
                 let idx = 0;
                 const img = document.getElementById('foto-loop');
-                img.src = misFotos[0]; // inicia con la primera foto
+                img.src = misFotos[0];
                 
                 setInterval(() => {
                     idx = (idx + 1) % misFotos.length;
                     img.src = misFotos[idx];
-                }, 1500); // 1.5 segundos
+                }, 1500);
             }, 2500);
         });
 
-        // Decoraciones (sin cambios)
+        // Decoraciones
         function iniciarDecoraciones() {
             for (let i = 0; i < 30; i++) {
                 const spark = document.createElement('div');
