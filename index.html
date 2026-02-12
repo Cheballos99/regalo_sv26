@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mi personita especial</title>
+    <style>
+        :root {
+            --principal: #40E0D0;
+            --oscuro: #008B8B;
+            --rosa: #ff69b4;
+            --oro: #ffd700;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            background: radial-gradient(circle, #e0f7f6 0%, #b2ebf2 100%);
+            overflow: hidden; touch-action: manipulation;
+        }
+
+        #capa-inicio {
+            position: fixed; inset: 0; background: var(--principal);
+            z-index: 200; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; color: white;
+        }
+
+        .sparkle {
+            position: absolute; width: 4px; height: 4px;
+            background: white; border-radius: 50%;
+            box-shadow: 0 0 10px 2px var(--oro);
+            animation: flash 1.5s infinite; z-index: 1;
+        }
+        @keyframes flash { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+        .corazon-vuelo {
+            position: absolute; bottom: -50px;
+            animation: volar 6s linear infinite;
+            opacity: 0.5; z-index: 1;
+        }
+        @keyframes volar { to { transform: translateY(-110vh) rotate(360deg); } }
+
+        .container {
+            position: relative; z-index: 10; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px; border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 85%; max-width: 350px;
+            border: 2px solid var(--principal);
+        }
+
+        h1 { color: var(--oscuro); font-size: 1.4rem; margin-bottom: 20px; }
+
+        .botones-area {
+            position: relative; width: 100%; height: 150px;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        button {
+            padding: 12px 25px; border: none; border-radius: 50px;
+            font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+
+        #btn-si { background: var(--principal); color: white; z-index: 50; position: relative; }
+        #btn-no { background: #ff4d4d; color: white; position: absolute; z-index: 40; }
+
+        .oculto { display: none !important; }
+
+        .nuestra-foto {
+            width: 100%; border-radius: 15px; border: 3px solid var(--principal);
+            margin: 10px 0; height: 250px; object-fit: cover;
+        }
+
+        #modal {
+            display: none; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white; padding: 25px; border-radius: 20px;
+            z-index: 300; border: 3px solid var(--rosa);
+            box-shadow: 0 0 50px rgba(0,0,0,0.3); width: 70%; text-align: center;
+        }
+
+        .footer { position: fixed; bottom: 10px; font-size: 0.7rem; color: var(--oscuro); width: 100%; text-align: center; }
+        #yt-player { position: absolute; left: -9999px; }
+    </style>
+</head>
+<body>
+
+    <div id="capa-inicio">
+        <h2 style="margin-bottom: 20px;">Para mi Brownicito ❤️</h2>
+        <button onclick="comenzar()" style="background: white; color: var(--principal);">Abrir Regalo 🎁</button>
+    </div>
+
+    <div id="yt-player"></div>
+
+    <div id="pantalla-principal" class="container">
+        <div class="card">
+            <h1>¿Quieres ser mi San Valentín sea aquí, en Orurito o en cualquier parte del mundo mi amor? 🌎✨</h1>
+            <div class="botones-area" id="contenedor-botones">
+                <button id="btn-si">SÍ</button>
+                <button id="btn-no">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal">
+        <h2 style="color: var(--rosa);">Eres mía, obvio que dirías que sí :b</h2>
+    </div>
+
+    <div id="pantalla-final" class="container oculto">
+        <div class="card">
+            <h1 style="color: var(--rosa);">¡Sabía que dirías que sí! ❤️</h1>
+            <p style="color: var(--oscuro); font-size: 0.9rem;">✨ Un detallito virtual para ti :3 ✨</p>
+            <img id="foto-loop" src="" alt="Nosotros" class="nuestra-foto">
+           <div style="color: var(--oscuro); font-weight: bold; font-size: 0.8rem; text-align: center;">
+                Nuestras ultimas aventurillas :3, todas muy bonitas contigo
+            </div>
+            <div style="color: var(--oscuro); font-weight: bold; font-size: 1rem;">
+                ¡Será un san valentin muy bonito a tu lado! 💘
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">© 2026 de tu roro</div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        // Tus canciones (ya las cambiaste bien)
+        const VIDEO_ID_INICIAL = 'UZWmtxLiiFE';   // Nat King Cole - L-O-V-E (primera, pregunta)
+        const VIDEO_ID_FINAL   = 'IpFX2vq8HKw';   // yung kai - blue (segunda, final)
+
+        let player;
+        let playerReady = false;
+
+        const misFotos = [
+            "fotos/1.jpeg",
+            "fotos/2.jpeg",
+            "fotos/3.jpeg",
+            "fotos/4.jpeg",
+            "fotos/5.jpeg",
+            "fotos/6.jpeg",
+            "fotos/7.jpeg",
+            "fotos/8.jpeg",
+            "fotos/9.jpeg",
+            "fotos/10.jpeg"
+        ];
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0',
+                width: '0',
+                videoId: VIDEO_ID_INICIAL,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': VIDEO_ID_INICIAL,   // clave para loop de un solo video
+                    'rel': 0,
+                    'modestbranding': 1,
+                    'enablejsapi': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            playerReady = true;
+            console.log("YouTube Player está listo");
+            // No reproducimos aquí, esperamos clic del usuario
+        }
+
+        function onPlayerStateChange(event) {
+            console.log("Estado del player:", event.data);
+            // -1 = sin empezar / error, 0 = terminado, 1 = reproduciendo, 2 = pausado, 3 = buffering, 5 = video cueado
+            if (event.data === 0) { // terminado
+                console.log("Video terminó → debería loop pero chequeamos");
+            }
+        }
+
+        function onPlayerError(event) {
+            console.error("Error en YouTube Player:", event.data);
+        }
+
+        function playVideoWithLoop(videoId) {
+            if (!playerReady) {
+                console.warn("Player no ready aún, esperando...");
+                setTimeout(() => playVideoWithLoop(videoId), 500);
+                return;
+            }
+
+            player.loadVideoById({
+                videoId: videoId,
+                startSeconds: 0
+            });
+
+            // Forzamos loop después de cargar
+            setTimeout(() => {
+                player.setLoop(true);
+                player.playVideo();
+                console.log("Intentando reproducir:", videoId);
+            }, 800); // pequeño delay para que cargue
+        }
+
+        function comenzar() {
+            document.getElementById('capa-inicio').classList.add('oculto');
+            playVideoWithLoop(VIDEO_ID_INICIAL);
+            iniciarDecoraciones();
+        }
+
+        // Lógica botón NO
+        const btnNo = document.getElementById('btn-no');
+        const btnSi = document.getElementById('btn-si');
+        let escalaSi = 1;
+
+        function moverBoton(e) {
+            if(e) e.preventDefault();
+            const padding = 20;
+            const maxX = window.innerWidth - btnNo.offsetWidth - padding;
+            const maxY = window.innerHeight - btnNo.offsetHeight - padding;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = Math.max(padding, randomX) + 'px';
+            btnNo.style.top = Math.max(padding, randomY) + 'px';
+
+            escalaSi += 0.2;
+            btnSi.style.transform = `scale(${escalaSi})`;
+        }
+
+        btnNo.addEventListener('mouseover', moverBoton);
+        btnNo.addEventListener('touchstart', moverBoton);
+
+        // Acción SÍ
+        btnSi.addEventListener('click', () => {
+            playVideoWithLoop(VIDEO_ID_FINAL);
+
+            document.getElementById('modal').style.display = 'block';
+            
+            setTimeout(() => {
+                document.getElementById('modal').style.display = 'none';
+                document.getElementById('pantalla-principal').classList.add('oculto');
+                document.getElementById('pantalla-final').classList.remove('oculto');
+                
+                let idx = 0;
+                const img = document.getElementById('foto-loop');
+                img.src = misFotos[0]; // inicia con la primera foto
+                
+                setInterval(() => {
+                    idx = (idx + 1) % misFotos.length;
+                    img.src = misFotos[idx];
+                }, 1500); // 1.5 segundos
+            }, 2500);
+        });
+
+        // Decoraciones (sin cambios)
+        function iniciarDecoraciones() {
+            for (let i = 0; i < 30; i++) {
+                const spark = document.createElement('div');
+                spark.className = 'sparkle';
+                spark.style.left = Math.random() * 100 + 'vw';
+                spark.style.top = Math.random() * 100 + 'vh';
+                document.body.appendChild(spark);
+            }
+            setInterval(() => {
+                const h = document.createElement('div');
+                h.className = 'corazon-vuelo';
+                h.innerHTML = '💗';
+                h.style.left = Math.random() * 100 + 'vw';
+                document.body.appendChild(h);
+                setTimeout(() => h.remove(), 6000);
+            }, 500);
+        }
+    </script>
+</body>
+</html>
